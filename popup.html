@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Summarizer</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #f9f9f9;
+            padding: 20px;
+            width: 300px;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        select, button {
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        select:hover, button:hover {
+            border-color: #666;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+
+        button#copy-btn {
+            background-color: #2196F3;
+        }
+
+        pre {
+            background-color: #eee;
+            padding: 10px;
+            font-size: 14px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            min-height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <h1>AI Summarizer</h1>
+
+    <div class="controls">
+        <select id="summary-type"> 
+            <option value="brief">Brief</option>
+            <option value="detailed">Detailed</option>
+            <option value="bullets">Bullet Points</option>
+        </select>
+
+        <button id="summarize">Summarize</button>
+        <button id="copy-btn">Copy</button>
+    </div>
+    
+    <pre id="result">Select a type and summarize</pre>
+    <script src="popup.js"></script>
+</body>
+</html>
