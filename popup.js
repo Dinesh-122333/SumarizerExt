@@ -17,19 +17,20 @@ document.getElementById('summarize').addEventListener("click",() => {
                 tabs.id,
                 {type: "GET_ARTICAL_TEXT"},
                 // send txt to gemini 
-                async(response) => {
-                    const { text } = response || {};
+                async({ text }) => {
+                    console.log("📥 Message response received from content script:", text);
                     if (!text){
                         result.textContent = "Couldn't extract the text from the page.";
                         return; 
-                    } 
-                    try{
+                    }
+                    try {
                         const summary = await getGeminiSummary(text, summaryType, geminiApiKey);
-                        result.textContent= summary;
-                    }catch(error){
+                        result.textContent = summary;
+                    } catch(error){
                         result.textContent = "Gemini Error: " + error.message;
                     }
                 }
+                
             )
         })
     })
