@@ -12,26 +12,37 @@ document.getElementById('summarize').addEventListener("click",() => {
             return;
         }
         // Ask content.js to page text
-        chrome.tabs.query({active: true, currentWindow: true}, ([tabs]) =>{
-            chrome.tabs.sendMessage(
-                tabs.id,
-                {type: "GET_ARTICAL_TEXT"},
-                // send txt to gemini 
-                async(response) => {
-                    const { text } = response || {};
-                    if (!text){
-                        result.textContent = "Couldn't extract the text from the page.";
-                        return; 
-                    } 
-                    try{
-                        const summary = await getGeminiSummary(text, summaryType, geminiApiKey);
-                        result.textContent= summary;
-                    }catch(error){
-                        result.textContent = "Gemini Error: " + error.message;
-                    }
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        const tab = tabs[0];
+        if (!tab || !tab.id) {
+            result.textContent = "Couldn't access the active tab.";
+            return;
+        }
+
+        chrome.tabs.sendMessage(
+            tab.id,
+            { type: "GET_ARTICAL_TEXT" },
+            async (response) => {
+                console.log(response);
+                
+                const { text } = response || {};
+                console.log("Extracted Text:", text);
+
+                if (!text) {
+                    result.textContent = "Couldn't extract the text from the page.";
+                    return;
                 }
-            )
-        })
+
+                try {
+                    const summary = await getGeminiSummary(text, summaryType, geminiApiKey);
+                    result.textContent = summary;
+                } catch (error) {
+                    result.textContent = "Gemini Error: " + error.message;
+                }
+            }
+        );
+    });
+
     })
 })
 

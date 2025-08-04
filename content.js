@@ -10,9 +10,13 @@ function getArticle() {
 
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    console.log("hii");
+    
   if (message.type === "GET_ARTICAL_TEXT") {
     const articleText = getArticle();
     sendResponse({ text: articleText });
+    console.log(articleText);
     return true; // ✅ Important: Keeps the message channel open for async responses
   }
 });
+console.log("Extracted text:", getArticle());
