@@ -12,37 +12,26 @@ document.getElementById('summarize').addEventListener("click",() => {
             return;
         }
         // Ask content.js to page text
-        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        const tab = tabs[0];
-        if (!tab || !tab.id) {
-            result.textContent = "Couldn't access the active tab.";
-            return;
-        }
-
-        chrome.tabs.sendMessage(
-            tab.id,
-            { type: "GET_ARTICAL_TEXT" },
-            async (response) => {
-                console.log(response);
-                
-                const { text } = response || {};
-                console.log("Extracted Text:", text);
-
-                if (!text) {
-                    result.textContent = "Couldn't extract the text from the page.";
-                    return;
+        chrome.tabs.query({active: true, currentWindow: true}, ([tabs]) =>{
+            chrome.tabs.sendMessage(
+                tabs.id,
+                {type: "GET_ARTICAL_TEXT"},
+                // send txt to gemini 
+                async(response) => {
+                    const { text } = response || {};
+                    if (!text){
+                        result.textContent = "Couldn't extract the text from the page.";
+                        return; 
+                    } 
+                    try{
+                        const summary = await getGeminiSummary(text, summaryType, geminiApiKey);
+                        result.textContent= summary;
+                    }catch(error){
+                        result.textContent = "Gemini Error: " + error.message;
+                    }
                 }
-
-                try {
-                    const summary = await getGeminiSummary(text, summaryType, geminiApiKey);
-                    result.textContent = summary;
-                } catch (error) {
-                    result.textContent = "Gemini Error: " + error.message;
-                }
-            }
-        );
-    });
-
+            )
+        })
     })
 })
 
@@ -61,21 +50,33 @@ async function getGeminiSummary(rawText, type, apiKey) {
     const res = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
         {
-            method: "POST",
-            headers: { "Content-Type": "application/json"},
-            body: JSON.stringify({
-                content: [{parts: [{text: prompt}] }],
-                generationConfig: {temperature: 0.2},
-
-            })
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [{ text: prompt }],
+              },
+            ],
+            generationConfig: {
+              temperature: 0.2,
+            },
+          }),
         }
-    )
-
-    if (!res.ok){
-        const {error} = await res.json();
-        throw new Error(error?.message || "Request Sent");
+      );
+  
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error?.message || "API request failed");
+      }
+  
+      const data = await res.json();
+      return (
+        data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+        "No summary available."
+      );
+    } catch (error) {
+      console.error("Error calling Gemini API:", error);
+      throw new Error("Failed to generate summary. Please try again later.");
     }
-
-    const data = await res.json();
-    return data.candidates?.[0]?.content?.parts?.[0]?.text ?? "No Summary.";
-}
+  }

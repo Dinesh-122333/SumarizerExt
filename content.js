@@ -1,8 +1,7 @@
-function getArticle() {
-    const article = document.querySelector('article');
-    console.log(article);
-    
+function getArticleText() {
+    const article = document.querySelector("article");
     if (article) return article.innerText;
+<<<<<<< HEAD
 
     const paragraphs = Array.from(document.querySelectorAll('p'));
     return paragraphs.map((p) => p.innerText).join('\n');
@@ -20,3 +19,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 console.log("Extracted text:", getArticle());
+=======
+  
+    // fallback
+    const paragraphs = Array.from(document.querySelectorAll("p"));
+    return paragraphs.map((p) => p.innerText).join("\n");
+  }
+  
+  chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
+    if (req.type === "GET_ARTICLE_TEXT") {
+      const text = getArticleText();
+      sendResponse({ text });
+    }
+  });
+>>>>>>> 468ac3ee8efa0d52a1de51c6c16e52b84244ddfe
