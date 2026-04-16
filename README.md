@@ -34,4 +34,4 @@ This extension is designed to make consuming long-form content faster, smarter, 
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/your-username/ai-for-summarizer.git
+   git clone https://github.com/Dinesh-122333/SumarizerExt
